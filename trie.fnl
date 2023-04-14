@@ -10,10 +10,10 @@
 ;; Constructor
 
 (fn Trie.new [self]
+  ;; https://www.lua.org/pil/16.1.html
   (let [trie {}]
     (setmetatable trie Trie)
-    (setmetatable trie {:__index Trie})
-    (set Trie.__self Trie)
+    (set Trie.__index Trie)
     trie))
 
 ;; Methods
@@ -30,14 +30,14 @@
 (fn Trie.add [self path_string_list]
   (match path_string_list
     nil nil
-    [head & ?tail] (let [next_table (get_or_insert #{} self :next)
-                         sub_trie (get_or_insert Trie.new self :next head)]
-                     (assert (not= next_table nil))
-                     (assert (not= sub_trie nil))
-                     (sub_trie:add (or ?tail []))
-                     sub_trie)
+    [h & tail] (let [next_table (get_or_insert #{} self :next)
+                     sub_trie (get_or_insert #(Trie:new $) self :next h)]
+                 (assert (not= next_table nil))
+                 (assert (not= sub_trie nil))
+                 (assert (not= sub_trie.new nil))
+                 (Trie.add sub_trie tail)
+                 sub_trie)
     [] (do
-         (tset self :value true)
          self)))
 
 ;; Return the Trie class
