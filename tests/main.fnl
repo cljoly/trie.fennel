@@ -7,9 +7,20 @@
 (local Trie (require :trie))
 
 (let [trie (Trie.new)]
+  (print (trie.view))
   (assert (not= trie nil))
-  (trie:add [:home :user :ghq :proj1])
-  (print (fennel.view trie))
-  (trie:add [:home :user :ghq :proj2])
-  (print (fennel.view trie)))
+  (let [common-path #[:home :user :ghq $1]
+        proj1 (common-path :proj1)
+        proj2 (common-path :proj2)
+        proj3 (common-path :proj3)]
+    (trie.set-value proj1 true)
+    (print (trie.view))
+    (assert (trie.get-value proj1) "proj1 not found (first time)")
+    (assert (not (trie.get-value proj3)) "proj3 found")
+    ;;
+    (trie.set-value proj2 true)
+    (print (trie.view))
+    (assert (trie.get-value proj1) "proj1 not found (second time)")
+    (assert (trie.get-value proj2) "proj2 not found")
+    (assert (not (trie.get-value proj3)) "proj3 found")))
 
