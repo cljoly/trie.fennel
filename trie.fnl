@@ -2,51 +2,47 @@
 ;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;; file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-(local fennel (require :fennel))
-
 (fn new [value]
   "Create a new Trie (which is also a trie node). Notes:
    * Nil paths are not allowed
    * Nil values are not allowed either"
-  (var children {})
-  (var val value)
+  (let [self {:children {} :val value}]
+    (fn fennelview []
+      "Returns a string to view the content of the trie, recursively. Requires fennel at runtime"
+      (local fennel (require :fennel))
+      (.. "#trie" (fennel.view self)))
 
-  (fn view []
-    "Returns a string to view the content of the trie, recursively"
-    (string.format "Trie{:val %q :children {%s}" val
-                   (accumulate [s "" k v (pairs children)]
-                     (.. s (string.format ":%s %s " k (v.view))))))
+    (fn get-value [path]
+      "Get the value at the given path. [] is the root"
+      (match path
+        [head & tail] (let [subtrie (?. self :children head)]
+                        (if subtrie
+                            (subtrie.get-value tail)
+                            nil))
+        [] self.val))
 
-  (fn get-value [path]
-    "Get the value at the given path. [] is the root"
-    (match path
-      [head & tail] (let [subtrie (?. children head)]
-                      (if subtrie
-                          (subtrie.get-value tail)
-                          nil))
-      [] val))
+    (fn set-value [path value]
+      "Set the value for the given path. [] will set the root value"
+      (if (= value nil)
+          nil
+          (match path
+            [head & tail] (let [subtrie (or (?. self :children head) (new))]
+                            (tset self :children head subtrie)
+                            (subtrie.set-value tail value))
+            [] (tset self :val value))))
 
-  (fn set-value [path value]
-    "Set the value for the given path. [] will set the root value"
-    (if (= value nil)
-        nil
-        (match path
-          [head & tail] (let [subtrie (or (?. children head) (new))]
-                          (tset children head subtrie)
-                          (subtrie.set-value tail value))
-          [] (set val value))))
+    (fn get-deepest-path [path value]
+      "Get the deepest path with value."
+      (match (values path value)
+        ([head] value) (if (= (get-value path) value) path
+                           (do
+                             (table.remove path)
+                             (get-deepest-path path value)))
+        ([] self.val) []
+        _ nil))
 
-  (fn get-deepest-path [path value]
-    "Get the deepest path with value."
-    (match (values path value)
-      ([head] value) (if (= (get-value path) value) path
-                         (do
-                           (table.remove path)
-                           (get-deepest-path path value)))
-      ([] val) []
-      _ nil))
-
-  {: get-value : set-value : view : get-deepest-path})
+    (-> {: get-value : set-value : get-deepest-path}
+        (setmetatable {:__fennelview fennelview}))))
 
 {: new}
 

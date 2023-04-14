@@ -56,6 +56,7 @@
           "should return nil on nil path")
   (assert (= nil (trie.get-deepest-path nil nil))
           "should return nil on nil path and value")
-  )
+  (print "Test view: " (fennel.view trie)))
 
-(print "[32mOK(B[m")
+(print "\027[32mOK\027(B\027[m")
+
