@@ -11,6 +11,12 @@
   (var children {})
   (var val value)
 
+  (fn view []
+    "Returns a string to view the content of the trie, recursively"
+    (string.format "Trie{:val %q :children {%s}" val
+                   (accumulate [s "" k v (pairs children)]
+                     (.. s (string.format ":%s %s " k (v.view))))))
+
   (fn get-value [path]
     "Get the value at the given path. [] is the root"
     (match path
@@ -22,26 +28,21 @@
 
   (fn set-value [path value]
     "Set the value for the given path. [] will set the root value"
-    (if (= nil value) (error "set-value: invalid nil value"))
-    (match path
-      [head & tail] (let [subtrie (or (?. children head) (new))]
-                      (tset children head subtrie)
-                      (subtrie.set-value tail value))
-      [] (set val value)))
-
-  (fn view []
-    "Returns a string to view the content of the trie, recursively"
-    (string.format "Trie{:val %q :children {%s}" val
-                   (accumulate [s "" k v (pairs children)]
-                     (.. s (string.format ":%s %s " k (v.view))))))
+    (if (= value nil)
+        nil
+        (match path
+          [head & tail] (let [subtrie (or (?. children head) (new))]
+                          (tset children head subtrie)
+                          (subtrie.set-value tail value))
+          [] (set val value))))
 
   (fn get-deepest-path [path value]
     "Get the deepest path with value."
     (match (values path value)
       ([head] value) (if (= (get-value path) value) path
-                 (do
-                   (table.remove path)
-                   (get-deepest-path path value)))
+                         (do
+                           (table.remove path)
+                           (get-deepest-path path value)))
       ([] val) []
       _ nil))
 
