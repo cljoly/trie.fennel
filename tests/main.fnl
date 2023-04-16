@@ -1,3 +1,5 @@
+;; Copyright 2023 Clément Joly <foss@131719.xyz>
+;;
 ;; This Source Code Form is subject to the terms of the Mozilla Public
 ;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;; file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -12,15 +14,23 @@
       proj2 #[:home :user :ghq :proj1 :src :proj2]
       proj3 #[:home :user :ghq :proj3]]
   (assert (not= trie nil))
-  ;;
+  ;; Check a path is correctly added
   (trie.set-value (proj1) true)
   (assert (trie.get-value (proj1)) "proj1 not found (first time)")
   (assert (not (trie.get-value (proj3))) "proj3 found")
-  ;;
+  ;; Add another one
   (trie.set-value (proj2) true)
   (assert (trie.get-value (proj1)) "proj1 not found (second time)")
   (assert (trie.get-value (proj2)) "proj2 not found")
-  (assert (not (trie.get-value (proj3))) "proj3 found"))
+  (assert (not (trie.get-value (proj3))) "proj3 found")
+  ;; Nil value
+  (assert (= nil (trie.set-value (proj3) nil)) "reject set nil on proj3")
+  (assert (= nil (trie.get-value (proj3))) "proj3 should have nothing")
+  (assert (= nil (trie.set-value [] nil)) "reject set nil on root")
+  (assert (= nil (trie.get-value [])) "root should have nothing")
+  ;; Nil path
+  (assert (= nil (trie.set-value nil true)) "nil path should return nil")
+  (assert (= nil (trie.get-value nil)) "nil value should return nil"))
 
 (fn deep= [table1 table2]
   "Whether or not table1’s content is the same as table2’s content"
@@ -52,11 +62,14 @@
           "should return nil on not-found root")
   (assert (deep= [] (trie.get-deepest-path [] true))
           "should return root on found root")
+  ;; Nil path and value
   (assert (= nil (trie.get-deepest-path nil true))
           "should return nil on nil path")
   (assert (= nil (trie.get-deepest-path nil nil))
           "should return nil on nil path and value")
-  (print "Test view: " (fennel.view trie)))
+  ;; Test printing a fairly complicated structure
+  (print "Test view:" (fennel.view trie))
+  (print "Test tostring:" (tostring trie)))
 
 (print "\027[32mOK\027(B\027[m")
 

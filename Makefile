@@ -8,7 +8,9 @@ fmt: $(fnl_files)
 	fnlfmt --fix $<
 
 lua/%.lua: %.fnl lua/
-	@echo "-- This Source Code Form is subject to the terms of the Mozilla Public" > $@
+	@echo "-- Copyright 2023 Clément Joly <foss@131719.xyz>" > $@
+	@echo "" >> $@
+	@echo "-- This Source Code Form is subject to the terms of the Mozilla Public" >> $@
 	@echo "-- License, v. 2.0. If a copy of the MPL was not distributed with this" >> $@
 	@echo "-- file, You can obtain one at http://mozilla.org/MPL/2.0/." >> $@
 	fennel --raw-errors --compile $< >> $@

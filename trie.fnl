@@ -1,3 +1,5 @@
+;; Copyright 2023 Clément Joly <foss@131719.xyz>
+;;
 ;; This Source Code Form is subject to the terms of the Mozilla Public
 ;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;; file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -24,7 +26,7 @@
     (fn set-value [path value]
       "Set the value for the given path. [] will set the root value"
       (if (= value nil)
-          nil
+          nil ; Early exit
           (match path
             [head & tail] (let [subtrie (or (?. self :children head) (new))]
                             (tset self :children head subtrie)
