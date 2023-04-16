@@ -36,7 +36,7 @@
             [] (tset self :val value))))
 
     (fn get-deepest-path [path value]
-      "Get the deepest path with value."
+      "Get the deepest path with value. Complexity: at most O(n), with n the length of the path."
       (match (values path value)
         ([head] value) (if (= (get-value path) value) path
                            (do

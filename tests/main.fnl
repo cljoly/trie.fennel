@@ -44,11 +44,12 @@
       proj1 #[:home :user :ghq :proj1]
       proj-inside #[:home :user :ghq :proj1 :src :module :proj2]
       proj3 #[:home :user :proj3]]
+  ;; Insert in various places
   (trie.set-value [] true)
   (trie.set-value (proj1) true)
   (trie.set-value (proj-inside) true)
   (trie.set-value (proj3) true)
-  ;;
+  ;; Access on various paths and values
   (let [deepest-path (-> (doto (proj1) (table.insert :a) (table.insert :b)
                            (table.insert :c))
                          (trie.get-deepest-path true))]
