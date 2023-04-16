@@ -68,8 +68,8 @@
   (assert (= nil (trie.get-deepest-path nil nil))
           "should return nil on nil path and value")
   ;; Test printing a fairly complicated structure
-  (print "Test view:" (fennel.view trie))
-  (print "Test tostring:" (tostring trie)))
+  (print "Test view:\n" (fennel.view trie))
+  (print "Test tostring:\n" (tostring trie)))
 
 (print "\027[32mOK\027(B\027[m")
 

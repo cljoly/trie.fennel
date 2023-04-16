@@ -10,9 +10,11 @@
    * Nil values are not allowed either"
   (let [self {:children {} :val value}]
     (fn fennelview []
-      "Returns a string to view the content of the trie, recursively. Requires fennel at runtime"
-      (local fennel (require :fennel))
-      (.. "#trie" (fennel.view self)))
+      "Returns a string to view the content of the trie, recursively. Requires fennel at runtime."
+      (let [(found fennel) (pcall require :fennel)]
+        (if found
+            (.. "#trie" (fennel.view self))
+            (error "fennel is required to view the content of the trie. Please install fennel-lang.org as a Lua library"))))
 
     (fn get-value [path]
       "Get the value at the given path. [] is the root"
