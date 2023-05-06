@@ -196,8 +196,6 @@
   (if (not _G.benchmarking)
       (do
         (print (.. "## " title))
-        (->> (collectgarbage :count)
-             (print "Memory used before collect (KiB):"))
         (collectgarbage :collect)
         (->> (collectgarbage :count)
              (print "Memory used after collect (KiB):"))))
