@@ -176,13 +176,23 @@
                :voLuptate
                :voluptate
                :END]
-        len (length words)]
+        words-length (length words)
+        len (* 3 words-length) ; Iterator length
+        third (math.floor (/ words-length 3))
+        unpack (or unpack table.unpack)]
     (var i 0)
     (fn []
       (if (< i len)
           (do
             (set i (+ i 1))
-            (values (shift words i) "@"))))))
+            (let [shifted-words (shift words i)]
+              (match (% i 3)
+                0
+                (values shifted-words "@") ; Full list
+                1
+                (values [(unpack shifted-words 1 third)] :1/3)
+                2
+                (values [(unpack shifted-words 1 (* 2 third))] :2/3))))))))
 
 (λ build-trie [data-iterator]
   "Insert all of data in the trie"
@@ -198,6 +208,7 @@
         (print (.. "## " title))
         (collectgarbage :collect)
         (->> (collectgarbage :count)
+             (math.floor)
              (print "Memory used after collect (KiB):"))))
   ?data)
 
@@ -207,8 +218,14 @@
     (let [got (trie.get-value k)]
       (assert (= got v) (.. "unexpected value: " got)))))
 
-(->> (measure-memory-use "Program start") (gen-data)
-     (measure-memory-use "Before building the trie") (build-trie)
+(λ simple-table [iterator]
+  (var t {})
+  (each [k v iterator]
+    (tset t k v))
+  t)
+
+(->> (measure-memory-use "Program start") (simple-table (gen-data))
+     (measure-memory-use "With simple table") (build-trie (gen-data))
      (measure-memory-use "With the trie") (many-gets)
      (measure-memory-use "Without the trie"))
 

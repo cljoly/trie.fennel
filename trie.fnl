@@ -15,7 +15,7 @@
     "Returns a string to view the content of the trie, recursively. Requires fennel at runtime."
     (let [(found fennel) (pcall require :fennel)]
       (if found
-          (.. "#trie" (fennel.view {:children children :value val}))
+          (.. "#trie" (fennel.view {: children :value val}))
           (error "fennel is required to view the content of the trie. Please install fennel-lang.org as a Lua library"))))
 
   (fn get-value [path]
