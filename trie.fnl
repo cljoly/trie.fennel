@@ -4,11 +4,11 @@
 ;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;; file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-(fn new [value]
+(fn new []
   "Create a new Trie (which is also a trie node). Notes:
    * Nil paths are not allowed
    * Nil values are not allowed either"
-  (let [self {:children {} :val value}]
+  (let [self {:children {} :val nil}]
     (fn fennelview []
       "Returns a string to view the content of the trie, recursively. Requires fennel at runtime."
       (let [(found fennel) (pcall require :fennel)]

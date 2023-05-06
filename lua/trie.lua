@@ -3,8 +3,8 @@
 -- This Source Code Form is subject to the terms of the Mozilla Public
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
-local function new(value)
-  local self = {children = {}, val = value}
+local function new()
+  local self = {children = {}, val = nil}
   local function fennelview()
     local found, fennel = pcall(require, "fennel")
     if found then
@@ -42,8 +42,8 @@ local function new(value)
       return nil
     end
   end
-  local function set_value(path, value0)
-    if (value0 == nil) then
+  local function set_value(path, value)
+    if (value == nil) then
       return nil
     else
       local _8_ = path
@@ -65,24 +65,24 @@ local function new(value)
         end
         subtrie = (_9_() or new())
         do end (self)["children"][head] = subtrie
-        return subtrie["set-value"](tail, value0)
+        return subtrie["set-value"](tail, value)
       elseif (_G.type(_8_) == "table") then
-        self["val"] = value0
+        self["val"] = value
         return nil
       else
         return nil
       end
     end
   end
-  local function get_deepest_path(path, value0)
-    local _15_, _16_ = path, value0
-    if (((_G.type(_15_) == "table") and (nil ~= (_15_)[1])) and (_16_ == value0)) then
+  local function get_deepest_path(path, value)
+    local _15_, _16_ = path, value
+    if (((_G.type(_15_) == "table") and (nil ~= (_15_)[1])) and (_16_ == value)) then
       local head = (_15_)[1]
-      if (get_value(path) == value0) then
+      if (get_value(path) == value) then
         return path
       else
         table.remove(path)
-        return get_deepest_path(path, value0)
+        return get_deepest_path(path, value)
       end
     elseif ((_G.type(_15_) == "table") and (_16_ == self.val)) then
       return {}
