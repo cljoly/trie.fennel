@@ -4,11 +4,12 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 local function new()
-  local self = {children = {}, val = nil}
+  local children = {}
+  local val = nil
   local function fennelview()
     local found, fennel = pcall(require, "fennel")
     if found then
-      return ("#trie" .. fennel.view(self))
+      return ("#trie" .. fennel.view({children = children, value = val}))
     else
       return error("fennel is required to view the content of the trie. Please install fennel-lang.org as a Lua library")
     end
@@ -20,11 +21,7 @@ local function new()
       local tail = {select(2, (table.unpack or _G.unpack)(_2_))}
       local subtrie
       do
-        local t_3_ = self
-        if (nil ~= t_3_) then
-          t_3_ = (t_3_).children
-        else
-        end
+        local t_3_ = children
         if (nil ~= t_3_) then
           t_3_ = (t_3_)[head]
         else
@@ -37,7 +34,7 @@ local function new()
         return nil
       end
     elseif (_G.type(_2_) == "table") then
-      return self.val
+      return val
     else
       return nil
     end
@@ -46,28 +43,24 @@ local function new()
     if (value == nil) then
       return nil
     else
-      local _8_ = path
-      if ((_G.type(_8_) == "table") and (nil ~= (_8_)[1])) then
-        local head = (_8_)[1]
-        local tail = {select(2, (table.unpack or _G.unpack)(_8_))}
+      local _7_ = path
+      if ((_G.type(_7_) == "table") and (nil ~= (_7_)[1])) then
+        local head = (_7_)[1]
+        local tail = {select(2, (table.unpack or _G.unpack)(_7_))}
         local subtrie
-        local function _9_()
-          local t_10_ = self
-          if (nil ~= t_10_) then
-            t_10_ = (t_10_).children
+        local function _8_()
+          local t_9_ = children
+          if (nil ~= t_9_) then
+            t_9_ = (t_9_)[head]
           else
           end
-          if (nil ~= t_10_) then
-            t_10_ = (t_10_)[head]
-          else
-          end
-          return t_10_
+          return t_9_
         end
-        subtrie = (_9_() or new())
-        do end (self)["children"][head] = subtrie
+        subtrie = (_8_() or new())
+        do end (children)[head] = subtrie
         return subtrie["set-value"](tail, value)
-      elseif (_G.type(_8_) == "table") then
-        self["val"] = value
+      elseif (_G.type(_7_) == "table") then
+        val = value
         return nil
       else
         return nil
@@ -75,19 +68,19 @@ local function new()
     end
   end
   local function get_deepest_path(path, value)
-    local _15_, _16_ = path, value
-    if (((_G.type(_15_) == "table") and (nil ~= (_15_)[1])) and (_16_ == value)) then
-      local head = (_15_)[1]
+    local _13_, _14_ = path, value
+    if (((_G.type(_13_) == "table") and (nil ~= (_13_)[1])) and (_14_ == value)) then
+      local head = (_13_)[1]
       if (get_value(path) == value) then
         return path
       else
         table.remove(path)
         return get_deepest_path(path, value)
       end
-    elseif ((_G.type(_15_) == "table") and (_16_ == self.val)) then
+    elseif ((_G.type(_13_) == "table") and (_14_ == val)) then
       return {}
     elseif true then
-      local _ = _15_
+      local _ = _13_
       return nil
     else
       return nil
