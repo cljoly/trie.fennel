@@ -1,6 +1,6 @@
 fnl_files = $(wildcard *.fnl)
 out_files = $(fnl_files:%.fnl=lua/%.lua)
-test_files = $(wildcard tests/*.fnl)
+fnl_test_files = $(wildcard tests/*.fnl)
 
 all: $(out_files)
 
@@ -13,7 +13,7 @@ lua/%.lua: %.fnl lua/
 	@echo "-- This Source Code Form is subject to the terms of the Mozilla Public" >> $@
 	@echo "-- License, v. 2.0. If a copy of the MPL was not distributed with this" >> $@
 	@echo "-- file, You can obtain one at http://mozilla.org/MPL/2.0/." >> $@
-	fennel --raw-errors --compile $< >> $@
+	fennel --raw-errors --globals "" --compile $< >> $@
 
 lua/:
 	mkdir -p lua
@@ -21,7 +21,7 @@ lua/:
 clean:
 	rm -rf lua
 
-test: $(test_files)
+test: $(fnl_test_files)
 	fennel $<
 
-.PHONY: clean fmt all
+.PHONY: test clean fmt all
