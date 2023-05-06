@@ -24,4 +24,7 @@ clean:
 test: $(fnl_test_files)
 	fennel $<
 
-.PHONY: test clean fmt all
+bench: $(out_files)
+	./bench/run.sh
+
+.PHONY: bench test clean fmt all
