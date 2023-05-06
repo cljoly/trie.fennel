@@ -23,7 +23,7 @@
   (assert=tbl (shift t 2) (shift t 5)))
 
 (fn gen-data []
-  "Generate the dataset to be used"
+  "Returns an iterator over the dataset to be used"
   (let [words [:src
                :LICENSE
                :license
@@ -175,13 +175,19 @@
                :vElit
                :voLuptate
                :voluptate
-               :END]]
-    (fcollect [i 0 (length words) 1] {:k (shift words i) :v "@"})))
+               :END]
+        len (length words)]
+    (var i 0)
+    (fn []
+      (if (< i len)
+          (do
+            (set i (+ i 1))
+            (values (shift words i) "@"))))))
 
-(fn build-trie [data]
+(λ build-trie [data-iterator]
   "Insert all of data in the trie"
   (let [trie1 (trie.new)]
-    (each [_ {: k : v} (ipairs data)]
+    (each [k v data-iterator]
       (trie1.set-value k v))
     trie1))
 
@@ -197,8 +203,14 @@
              (print "Memory used after collect (KiB):"))))
   ?data)
 
+(λ many-gets [trie]
+  "Perform many lookups through the trie"
+  (each [k v (gen-data)]
+    (let [got (trie.get-value k)]
+      (assert (= got v) (.. "unexpected value: " got)))))
+
 (->> (measure-memory-use "Program start") (gen-data)
      (measure-memory-use "Before building the trie") (build-trie)
-     (measure-memory-use "With the trie")
-     (measure-memory-use "Without the trie" nil))
+     (measure-memory-use "With the trie") (many-gets)
+     (measure-memory-use "Without the trie"))
 
